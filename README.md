@@ -1,4 +1,4 @@
-# Email verification & password reset with Mailpit
+# Developing for Email Verification with MailPit
 
 A minimal app that demonstrates sign-up with email verification and password reset.
 In local development, [Mailpit](https://mailpit.axllent.org/) catches every outgoing email,
