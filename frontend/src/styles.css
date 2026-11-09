@@ -1,0 +1,197 @@
+/* Each page sits on an airmail envelope: the red/blue striped border is the one
+   decorative element. Everything else stays quiet: cool paper, navy ink, one serif. */
+:root {
+  --paper: #eef1f6;
+  --card: #ffffff;
+  --ink: #1f2a44;
+  --muted: #5b6478;
+  --line: #c3cad7;
+  --airmail-red: #c8102e;
+  --airmail-blue: #1d3f8f;
+  --ok: #1e6b45;
+  --ok-bg: #e8f4ed;
+  --bad: #a4262c;
+  --bad-bg: #fbecec;
+
+  color-scheme: light;
+  font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 3.5rem 1rem;
+}
+
+header {
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+header p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+/* White letter inside a striped airmail border (padding-box vs border-box backgrounds). */
+.envelope {
+  padding: 1.75rem 1.5rem 1.5rem;
+  border: 8px solid transparent;
+  overflow-wrap: anywhere; /* long email addresses */
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    repeating-linear-gradient(
+        -45deg,
+        var(--airmail-red) 0 14px,
+        var(--card) 14px 20px,
+        var(--airmail-blue) 20px 34px,
+        var(--card) 34px 40px
+      )
+      border-box;
+  box-shadow: 0 1px 2px rgb(31 42 68 / 0.12), 0 8px 24px rgb(31 42 68 / 0.08);
+}
+
+h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+.envelope > :last-child {
+  margin-bottom: 0;
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+input {
+  font: inherit;
+  font-weight: 400;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+input:focus-visible {
+  outline: 2px solid var(--airmail-blue);
+  outline-offset: 1px;
+  border-color: var(--airmail-blue);
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  justify-self: start;
+  padding: 0.55rem 1.1rem;
+  color: #fff;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--airmail-blue);
+  border-color: var(--airmail-blue);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--airmail-blue);
+  outline-offset: 2px;
+}
+
+/* Buttons outside a form (Resend, Log out) need their own space below. */
+.envelope > button {
+  margin-bottom: 1rem;
+}
+
+button.secondary {
+  color: var(--ink);
+  background: transparent;
+}
+
+button.secondary:hover {
+  color: #fff;
+}
+
+a {
+  color: var(--airmail-blue);
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.9375rem;
+}
+
+.notice,
+.error {
+  padding: 0.6rem 0.8rem;
+  border-left: 3px solid;
+}
+
+.notice {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.error {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+
+@media (max-width: 30rem) {
+  main {
+    padding: 2rem 0.75rem;
+  }
+
+  .envelope {
+    padding: 1.25rem 1rem 1rem;
+  }
+}

@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (cp .env.example .env)}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      # TCP check: during first-run init the temporary server only listens on a
+      # Unix socket, so this does not report healthy until init.sql has run.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    # No ports: only reachable from other services as db:5432.
+
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    ports:
+      - "8025:8025" # web UI + REST API. SMTP (1025) stays internal.
+
+  api:
+    build: ./api
+    init: true
+    environment:
+      PORT: 3000
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-app}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-app}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (cp .env.example .env)}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:5173}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-Mailpit Demo <no-reply@example.com>}
+    volumes:
+      - ./api:/app
+      - /app/node_modules # keep the image's node_modules, not the host's
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    # No ports: the browser reaches it through the Vite proxy.
+
+  frontend:
+    build: ./frontend
+    init: true
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  db-data:
